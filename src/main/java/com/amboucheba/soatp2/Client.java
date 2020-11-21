@@ -8,7 +8,9 @@ public class Client {
 
     public static void main(String[] args){
 
-        String uri = "";
+        Long id = 1L;
+
+        String uri = "https://amboucheba-soa-tp2-user.herokuapp.com/users/" + id + "/messages";
 
         RestTemplate restTemplate = new RestTemplate();
 

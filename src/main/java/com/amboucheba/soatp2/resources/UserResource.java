@@ -57,7 +57,7 @@ public class UserResource {
 
         String username = user.get().getUsername();
 
-        String uri = "https://amboucheba-soa-tp2.herokuapp.com/messages?username="+username;
+        String uri = "https://amboucheba-soa-tp2.herokuapp.com/messages?username=AB";//+username;
 
         ResponseEntity<MessageList> responseEntity = restTemplate.getForEntity(uri, MessageList.class);
         MessageList messageList = responseEntity.getBody();
