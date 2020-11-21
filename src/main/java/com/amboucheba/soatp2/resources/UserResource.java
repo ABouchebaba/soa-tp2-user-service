@@ -48,7 +48,7 @@ public class UserResource {
     }
 
     @GetMapping(value = "/{userId}/messages", produces = "application/json")
-    public ResponseEntity<MessageList> getUserMessagesById(@PathVariable("userId") long userId){
+    public ResponseEntity<String> getUserMessagesById(@PathVariable("userId") long userId){
 
         Optional<User> user = userRepository.findById(userId);
         if (user.isEmpty()){
@@ -59,9 +59,11 @@ public class UserResource {
 
         String uri = "https://amboucheba-soa-tp2.herokuapp.com/messages?username="+username;
 
-        ResponseEntity<MessageList> responseEntity = restTemplate.getForEntity(uri, MessageList.class);
-        MessageList messageList = responseEntity.getBody();
-        return ResponseEntity.ok(messageList);
+//        ResponseEntity<MessageList> responseEntity = restTemplate.getForEntity(uri, MessageList.class);
+//        MessageList messageList = responseEntity.getBody();
+//        return ResponseEntity.ok(messageList);
+
+        return ResponseEntity.ok("username = " + username);
     }
 
     @PostMapping(consumes = "application/json" )
