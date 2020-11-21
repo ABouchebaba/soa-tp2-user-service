@@ -1,11 +1,10 @@
-package com.amboucheba.soatp2.resources.unit.MessageResource;
+package com.amboucheba.soatp2.resources.unit.UserResource;
 
 import com.amboucheba.soatp2.exceptions.ApiException;
-import com.amboucheba.soatp2.exceptions.NotFoundException;
 import com.amboucheba.soatp2.models.Message;
-import com.amboucheba.soatp2.models.MessageList;
-import com.amboucheba.soatp2.repositories.MessageRepository;
-import com.amboucheba.soatp2.resources.MessageResource;
+import com.amboucheba.soatp2.models.User;
+import com.amboucheba.soatp2.repositories.UserRepository;
+import com.amboucheba.soatp2.resources.UserResource;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,18 +19,17 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(MessageResource.class)
-class GetMessageByIdTest {
+@WebMvcTest(UserResource.class)
+class GetUserByIdTest {
 
     @MockBean
-    private MessageRepository messageRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private MockMvc mvc;
@@ -40,33 +38,33 @@ class GetMessageByIdTest {
     private ObjectMapper objectMapper;
 
     @Test
-    // Get message with valid id : expect a message
-    void getMessageById() throws Exception {
+    // Get user with valid id : expect a user
+    void getUserById() throws Exception {
 
-        long messageId = 1;
-        Message message = new Message(messageId, "User 1", "Message 1", new Date());
+        long userId = 1;
+        User user = new User(userId, "User 1", "user@email.com", new Date());
 
-        Mockito.when(messageRepository.findById(messageId)).thenReturn(Optional.of(message));
+        Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         // Send request to endpoint
-        RequestBuilder request = MockMvcRequestBuilders.get("/messages/" + messageId);
+        RequestBuilder request = MockMvcRequestBuilders.get("/users/" + userId);
         MvcResult response = mvc.perform(request).andReturn();
         String response_str = response.getResponse().getContentAsString();
 
-        String expectedResponse = objectMapper.writeValueAsString( message);
+        String expectedResponse = objectMapper.writeValueAsString( user);
 
         // Compare expected response with actual response
         assertEquals(expectedResponse, response_str);
     }
 
     @Test
-    void messageIdNotFound() throws Exception {
-        long messageId = 1;
+    void userIdNotFound() throws Exception {
+        long userId = 1;
 
-        Mockito.when(messageRepository.findById(messageId)).thenReturn(Optional.empty());
+        Mockito.when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         // Send request to endpoint
-        RequestBuilder request = MockMvcRequestBuilders.get("/messages/" + messageId);
+        RequestBuilder request = MockMvcRequestBuilders.get("/users/" + userId);
         MvcResult response = mvc.perform(request).andReturn();
         // Response is supposed to be an ApiException
         String response_str = response.getResponse().getContentAsString();

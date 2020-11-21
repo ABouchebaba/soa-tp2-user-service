@@ -1,9 +1,10 @@
-package com.amboucheba.soatp2.resources.unit.MessageResource;
+package com.amboucheba.soatp2.resources.unit.UserResource;
 
 import com.amboucheba.soatp2.models.Message;
-import com.amboucheba.soatp2.models.MessageList;
-import com.amboucheba.soatp2.repositories.MessageRepository;
-import com.amboucheba.soatp2.resources.MessageResource;
+import com.amboucheba.soatp2.models.User;
+import com.amboucheba.soatp2.models.UserList;
+import com.amboucheba.soatp2.repositories.UserRepository;
+import com.amboucheba.soatp2.resources.UserResource;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,18 +18,17 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(MessageResource.class)
+@WebMvcTest(UserResource.class)
 class GetAllTest {
 
     @MockBean
-    private MessageRepository messageRepository;
+    UserRepository userRepository;
 
     @Autowired
     private MockMvc mvc;
@@ -40,18 +40,18 @@ class GetAllTest {
     void getAll() throws Exception {
 
         // Mock dependency response: messageRepository
-        List<Message> messages = Arrays.asList(
-                new Message("u1", "t1"),
-                new Message("u2", "t2")
+        List<User> users = Arrays.asList(
+                new User("u1", "t1@email.com"),
+                new User("u2", "t2@email.com")
         );
-        Mockito.when(messageRepository.findAll()).thenReturn(messages);
+        Mockito.when(userRepository.findAll()).thenReturn(users);
 
         // Send request to endpoint
-        RequestBuilder request = MockMvcRequestBuilders.get("/messages");
+        RequestBuilder request = MockMvcRequestBuilders.get("/users");
         MvcResult response = mvc.perform(request).andReturn();
         String response_str = response.getResponse().getContentAsString();
 
-        String expectedResponse = objectMapper.writeValueAsString(new MessageList( messages));
+        String expectedResponse = objectMapper.writeValueAsString(new UserList( users));
 
         // Compare expected response with actual response
         assertEquals(expectedResponse, response_str);

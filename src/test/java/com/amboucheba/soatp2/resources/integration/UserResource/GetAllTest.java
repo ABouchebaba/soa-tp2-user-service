@@ -1,8 +1,8 @@
-package com.amboucheba.soatp2.resources.integration.MessageResource;
+package com.amboucheba.soatp2.resources.integration.UserResource;
 
 import com.amboucheba.soatp2.SoaTp2Application;
-import com.amboucheba.soatp2.models.MessageList;
-import com.amboucheba.soatp2.repositories.MessageRepository;
+import com.amboucheba.soatp2.models.UserList;
+import com.amboucheba.soatp2.repositories.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ class GetAllTest {
     private int port;
 
     @Autowired
-    private  MessageRepository messageRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private  TestRestTemplate testRestTemplate;
@@ -38,9 +38,9 @@ class GetAllTest {
 
     @Test
     void getAll() throws Exception {
-       String uri = "http://localhost:" + port + "/messages";
-       ResponseEntity<MessageList> responseEntity = testRestTemplate.getForEntity(uri, MessageList.class);
-       MessageList messageList = responseEntity.getBody();
+       String uri = "http://localhost:" + port + "/users";
+       ResponseEntity<UserList> responseEntity = testRestTemplate.getForEntity(uri, UserList.class);
+//       UserList messageList = responseEntity.getBody();
 
        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 

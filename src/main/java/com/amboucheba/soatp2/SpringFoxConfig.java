@@ -25,13 +25,13 @@ public class SpringFoxConfig {
 
     private ApiInfo apiInfo(){
         return new ApiInfo(
-                "Message Api Documentation",
-                "This is the Message api implemented for SOA's second Homework, it describes the crud operation of the message entity",
+                "User Api Documentation",
+                "This is the User api implemented for SOA's second Homework, it describes the crud operation of the user entity",
                 "1.0",
-                "TermsOfServiceURL:not ready yet",
-                new Contact("Amine Bouchebaba", "Url: not ready yet", "bouchebaba.amine@gmail.com"),
-                "License: not ready yet",
-                "License URL: not ready yet",
+                "/",
+                new Contact("Amine Bouchebaba", "/", "bouchebaba.amine@gmail.com"),
+                "/",
+                "/",
                 Collections.emptyList()
                 );
     }

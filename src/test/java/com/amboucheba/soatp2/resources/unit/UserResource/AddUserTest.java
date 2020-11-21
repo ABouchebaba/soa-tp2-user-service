@@ -1,9 +1,10 @@
-package com.amboucheba.soatp2.resources.unit.MessageResource;
+package com.amboucheba.soatp2.resources.unit.UserResource;
 
 import com.amboucheba.soatp2.exceptions.ApiException;
 import com.amboucheba.soatp2.models.Message;
-import com.amboucheba.soatp2.repositories.MessageRepository;
-import com.amboucheba.soatp2.resources.MessageResource;
+import com.amboucheba.soatp2.models.User;
+import com.amboucheba.soatp2.repositories.UserRepository;
+import com.amboucheba.soatp2.resources.UserResource;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,11 +24,11 @@ import java.util.Date;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(MessageResource.class)
-class AddMessageTest {
+@WebMvcTest(UserResource.class)
+class AddUserTest {
 
     @MockBean
-    MessageRepository messageRepository;
+    UserRepository userRepository;
 
     @Autowired
     private MockMvc mvc;
@@ -37,17 +38,18 @@ class AddMessageTest {
 
     @Test
     // Happy scenario
-    void addMessage() throws Exception {
+    void addUser() throws Exception {
 
-        Message message = new Message(  "User 1", "Message 1");
-        Long messageId = 1L;
-        Message savedMessage = new Message(messageId, "User 1", "Message 1", new Date());
-        Mockito.when(messageRepository.save(message)).thenReturn(savedMessage);
+
+        User user = new User(  "User 1", "email1@email.com");
+        Long userId = 1L;
+        User savedUser = new User(userId, "User 1", "email1@email.com", new Date());
+        Mockito.when(userRepository.save(user)).thenReturn(savedUser);
 
         // Send request to endpoint
-        RequestBuilder request = MockMvcRequestBuilders.post("/messages" )
+        RequestBuilder request = MockMvcRequestBuilders.post("/users" )
                 .contentType("application/json")
-                .content(objectMapper.writeValueAsString(message));
+                .content(objectMapper.writeValueAsString(user));
         MvcResult response = mvc.perform(request).andReturn();
         String response_str = response.getResponse().getContentAsString();
 
@@ -55,20 +57,20 @@ class AddMessageTest {
 
         String location = response.getResponse().getHeader("location");
 
-        assertTrue(location.endsWith("/messages/" + messageId));
+        assertTrue(location.endsWith("/users/" + userId));
     }
 
     @Test
-    // Same thing for text
+    // Same thing for email
     void usernameMissing() throws Exception {
         // Not setting username
-        Message message = new Message();
-        message.setText("This is the new text");
+        User user = new User();
+        user.setEmail("newEmail@email.com");
 
         // Send request to endpoint
-        RequestBuilder request = MockMvcRequestBuilders.post("/messages" )
+        RequestBuilder request = MockMvcRequestBuilders.post("/users" )
                 .contentType("application/json")
-                .content(objectMapper.writeValueAsString(message));
+                .content(objectMapper.writeValueAsString(user));
         MvcResult response = mvc.perform(request).andReturn();
         String response_str = response.getResponse().getContentAsString();
 
@@ -81,12 +83,12 @@ class AddMessageTest {
     @Test
     void usernameTooShort() throws Exception {
         // username must be between 6 and 255
-        Message message = new Message(  "User", "Message 1");
+        User user = new User(  "User", "email@email.com");
 
         // Send request to endpoint
-        RequestBuilder request = MockMvcRequestBuilders.post("/messages" )
+        RequestBuilder request = MockMvcRequestBuilders.post("/users" )
                 .contentType("application/json")
-                .content(objectMapper.writeValueAsString(message));
+                .content(objectMapper.writeValueAsString(user));
         MvcResult response = mvc.perform(request).andReturn();
         String response_str = response.getResponse().getContentAsString();
 
@@ -97,22 +99,20 @@ class AddMessageTest {
     }
 
     @Test
-    // Same thing for username
-    void textTooLarge() throws Exception {
+    void emailWrongFormat() throws Exception {
 
-        String text = "a".repeat(256);
-        Message message = new Message(  "User 1", text);
+        String email = "email@";
+        User user = new User(  "User 1", email);
 
         // Send request to endpoint
-        RequestBuilder request = MockMvcRequestBuilders.post("/messages" )
+        RequestBuilder request = MockMvcRequestBuilders.post("/users" )
                 .contentType("application/json")
-                .content(objectMapper.writeValueAsString(message));
+                .content(objectMapper.writeValueAsString(user));
         MvcResult response = mvc.perform(request).andReturn();
         String response_str = response.getResponse().getContentAsString();
 
         ApiException responseException = objectMapper.readerFor(ApiException.class).readValue(response_str);
 
         assert responseException.getStatus().equals(HttpStatus.BAD_REQUEST);
-
     }
 }

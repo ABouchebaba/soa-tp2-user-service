@@ -1,9 +1,10 @@
-package com.amboucheba.soatp2.resources.unit.MessageResource;
+package com.amboucheba.soatp2.resources.unit.UserResource;
 
 import com.amboucheba.soatp2.exceptions.ApiException;
 import com.amboucheba.soatp2.models.Message;
-import com.amboucheba.soatp2.repositories.MessageRepository;
-import com.amboucheba.soatp2.resources.MessageResource;
+import com.amboucheba.soatp2.models.User;
+import com.amboucheba.soatp2.repositories.UserRepository;
+import com.amboucheba.soatp2.resources.UserResource;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,11 +25,11 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(MessageResource.class)
-class UpdateMessageTest {
+@WebMvcTest(UserResource.class)
+class UpdateUserTest {
 
     @MockBean
-    MessageRepository messageRepository;
+    UserRepository userRepository;
 
     @Autowired
     private MockMvc mvc;
@@ -37,63 +38,63 @@ class UpdateMessageTest {
     private ObjectMapper objectMapper;
 
     @Test
-    // Happy path 1 : message already exists -> update it
-    void updateExistingMessage() throws Exception {
-        Long messageId = 1L;
-        Message message = new Message(messageId, "User 1", "Text", null);
-        Message updatedMessage = new Message(messageId, "User 1", "Updated Text", null);
-        Mockito.when(messageRepository.findById(messageId)).thenReturn(Optional.of(message));
-        Mockito.when(messageRepository.save(message)).thenReturn(updatedMessage);
+    // Happy path 1 : user already exists -> update it
+    void updateExistingUser() throws Exception {
+        Long userId = 1L;
+        User user = new User(userId, "User 1", "email@email.com", null);
+        User updatedUser = new User(userId, "User 1", "updated@email.com", null);
+        Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        Mockito.when(userRepository.save(user)).thenReturn(updatedUser);
 
         // Send request to endpoint
-        RequestBuilder request = MockMvcRequestBuilders.put("/messages/" + messageId )
+        RequestBuilder request = MockMvcRequestBuilders.put("/users/" + userId )
                 .contentType("application/json")
-                .content(objectMapper.writeValueAsString(message));
+                .content(objectMapper.writeValueAsString(user));
         MvcResult response = mvc.perform(request).andReturn();
         String response_str = response.getResponse().getContentAsString();
 
-        String expectedResponse = objectMapper.writeValueAsString(updatedMessage);
+        String expectedResponse = objectMapper.writeValueAsString(updatedUser);
 
         assertEquals(expectedResponse, response_str);
         assertEquals(HttpStatus.OK.value(), response.getResponse().getStatus());
     }
 
     @Test
-    // Happy path 2 : message does not exist -> create it
-    void messageDoesNotExist() throws Exception {
-        Long messageId = 1L;
-        Message message = new Message(messageId, "User 1", "Text", null);
+    // Happy path 2 : user does not exist -> create it
+    void userDoesNotExist() throws Exception {
+        Long userId = 1L;
+        User user = new User(userId, "User 1", "updated@email.com", null);
 
-        Mockito.when(messageRepository.findById(messageId)).thenReturn(Optional.empty());
-        Mockito.when(messageRepository.save(message)).thenReturn(message);
+        Mockito.when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        Mockito.when(userRepository.save(user)).thenReturn(user);
 
         // Send request to endpoint
-        RequestBuilder request = MockMvcRequestBuilders.put("/messages/" + messageId )
+        RequestBuilder request = MockMvcRequestBuilders.put("/users/" + userId )
                 .contentType("application/json")
-                .content(objectMapper.writeValueAsString(message));
+                .content(objectMapper.writeValueAsString(user));
         MvcResult response = mvc.perform(request).andReturn();
 
         assertEquals(HttpStatus.CREATED.value(), response.getResponse().getStatus());
 
         String location = response.getResponse().getHeader("location");
 
-        assertTrue(location.endsWith("/messages/" + messageId));
+        assertTrue(location.endsWith("/users/" + userId));
     }
 
     @Test
-        // Same thing for text
+        // Same thing for EMAIL
     void usernameMissing() throws Exception {
 
-        Long messageId = 1L;
+        Long userId = 1L;
         // Not setting username
-        Message message = new Message();
-        message.setId(messageId);
-        message.setText("This is the new text");
+        User user = new User();
+        user.setId(userId);
+        user.setEmail("email@email.com");
 
         // Send request to endpoint
-        RequestBuilder request = MockMvcRequestBuilders.put("/messages/" + messageId )
+        RequestBuilder request = MockMvcRequestBuilders.put("/users/" + userId )
                 .contentType("application/json")
-                .content(objectMapper.writeValueAsString(message));
+                .content(objectMapper.writeValueAsString(user));
         MvcResult response = mvc.perform(request).andReturn();
         String response_str = response.getResponse().getContentAsString();
 
@@ -106,14 +107,14 @@ class UpdateMessageTest {
     @Test
     void usernameTooShort() throws Exception {
 
-        Long messageId = 1L;
+        Long userId = 1L;
         // username must be between 6 and 255
-        Message message = new Message( messageId, "User", "Message 1", new Date());
+        User user = new User( userId, "User", "Message 1", new Date());
 
         // Send request to endpoint
-        RequestBuilder request = MockMvcRequestBuilders.put("/messages/" + messageId )
+        RequestBuilder request = MockMvcRequestBuilders.put("/users/" + userId )
                 .contentType("application/json")
-                .content(objectMapper.writeValueAsString(message));
+                .content(objectMapper.writeValueAsString(user));
         MvcResult response = mvc.perform(request).andReturn();
         String response_str = response.getResponse().getContentAsString();
 
@@ -125,16 +126,16 @@ class UpdateMessageTest {
 
     @Test
         // Same thing for username
-    void textTooLarge() throws Exception {
+    void emailWrongFormat() throws Exception {
 
-        Long messageId = 1L;
-        String text = "a".repeat(256);
-        Message message = new Message( messageId, "User 1", text, new Date());
+        Long userId = 1L;
+        String text = "email@";
+        User user = new User( userId, "User 1", text, new Date());
 
         // Send request to endpoint
-        RequestBuilder request = MockMvcRequestBuilders.put("/messages/" + messageId )
+        RequestBuilder request = MockMvcRequestBuilders.put("/users/" + userId )
                 .contentType("application/json")
-                .content(objectMapper.writeValueAsString(message));
+                .content(objectMapper.writeValueAsString(user));
         MvcResult response = mvc.perform(request).andReturn();
         String response_str = response.getResponse().getContentAsString();
 

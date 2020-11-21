@@ -1,7 +1,7 @@
-package com.amboucheba.soatp2.resources.integration.MessageResource;
+package com.amboucheba.soatp2.resources.integration.UserResource;
 
 import com.amboucheba.soatp2.SoaTp2Application;
-import com.amboucheba.soatp2.models.Message;
+import com.amboucheba.soatp2.models.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
         @Sql(scripts = { "classpath:schema.sql" }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
         @Sql(scripts = { "classpath:reset.sql" }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 })
-class AddMessageTest {
+class AddUserTest {
 
     @LocalServerPort
     private int port;
@@ -28,23 +28,23 @@ class AddMessageTest {
     private TestRestTemplate testRestTemplate;
 
     @Test
-    void addMessage() throws Exception {
+    void addUser() throws Exception {
         String username = "User 1";
-        String text = "This is some text";
-        Message message = new Message(username, text);
+        String email = "email@email.com";
+        User user = new User(username, email);
 
-        String uri = "http://localhost:" + port + "/messages";
+        String uri = "http://localhost:" + port + "/users";
 
-        ResponseEntity<Message> response = testRestTemplate.postForEntity(uri, message, Message.class);
+        ResponseEntity<User> response = testRestTemplate.postForEntity(uri, user, User.class);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
         String location = response.getHeaders().getFirst("location");
-        Message savedMessage = testRestTemplate.getForObject(location, Message.class);
+        User savedUser = testRestTemplate.getForObject(location, User.class);
 
-        assertNotNull(savedMessage.getId());
-        assertNotNull(savedMessage.getCreated_at());
-        assertEquals(username, savedMessage.getUsername());
-        assertEquals(text, savedMessage.getText());
+        assertNotNull(savedUser.getId());
+        assertNotNull(savedUser.getCreated_at());
+        assertEquals(username, savedUser.getUsername());
+        assertEquals(email, savedUser.getEmail());
     }
 }
