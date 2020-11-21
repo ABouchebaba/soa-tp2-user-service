@@ -31,4 +31,15 @@ public class MessageList {
     public void setCount(int count) {
         this.count = count;
     }
+
+
+    public String toString(){
+        String result = "";
+
+        for (Message message: messages) {
+            result = result.concat(message.getId() + " : " + message.getText() + "\n");
+        }
+
+        return result;
+    }
 }

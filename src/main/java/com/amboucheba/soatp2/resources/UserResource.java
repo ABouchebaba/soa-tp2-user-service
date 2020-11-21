@@ -2,13 +2,18 @@ package com.amboucheba.soatp2.resources;
 
 
 import com.amboucheba.soatp2.exceptions.NotFoundException;
+import com.amboucheba.soatp2.exceptions.RemoteException;
 import com.amboucheba.soatp2.models.MessageList;
 import com.amboucheba.soatp2.models.User;
 import com.amboucheba.soatp2.models.UserList;
 import com.amboucheba.soatp2.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -48,7 +53,7 @@ public class UserResource {
     }
 
     @GetMapping(value = "/{userId}/messages", produces = "application/json")
-    public ResponseEntity<MessageList> getUserMessagesById(@PathVariable("userId") long userId){
+    public ResponseEntity<MessageList> getUserMessagesById(@PathVariable("userId") long userId)  {
 
         Optional<User> user = userRepository.findById(userId);
         if (user.isEmpty()){
@@ -59,7 +64,14 @@ public class UserResource {
 
         String uri = "https://amboucheba-soa-tp2.herokuapp.com/messages?username="+username;
 
-        ResponseEntity<MessageList> responseEntity = restTemplate.getForEntity(uri, MessageList.class);
+        ResponseEntity<MessageList> responseEntity;
+        try{
+            responseEntity = restTemplate.getForEntity(uri, MessageList.class);
+        }
+        catch(HttpServerErrorException se){
+            throw new RemoteException("Message service not responding!");
+        }
+
         MessageList messageList = responseEntity.getBody();
         return ResponseEntity.ok(messageList);
 

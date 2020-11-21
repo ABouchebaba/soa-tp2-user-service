@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.client.RestClientException;
 
 @ControllerAdvice
 public class ApiExceptionHandler {
@@ -21,6 +22,12 @@ public class ApiExceptionHandler {
         String message = e.getBindingResult().getFieldError().getDefaultMessage();
         ApiException apiException = new ApiException(message, HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(apiException, HttpStatus.BAD_REQUEST );
+    }
+
+    @ExceptionHandler(value = {RemoteException.class})
+    public ResponseEntity<Object> handleRemoteException(RemoteException e){
+        ApiException apiException = new ApiException(e.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
+        return new ResponseEntity<>(apiException, HttpStatus.SERVICE_UNAVAILABLE );
     }
 
     // Unused: Replaced with MethodArgumentNotValidException
