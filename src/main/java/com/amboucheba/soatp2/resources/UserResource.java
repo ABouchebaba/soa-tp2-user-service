@@ -70,7 +70,7 @@ public class UserResource {
             responseEntity = restTemplate.getForEntity(uri, MessageList.class);
         }
         catch (RestClientException ce){
-            throw new RemoteException("Message service not responding!");
+            throw new RemoteException("No response from Message service!");
         }
 
         MessageList messageList = responseEntity.getBody();
