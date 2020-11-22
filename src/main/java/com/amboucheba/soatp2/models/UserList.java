@@ -30,4 +30,15 @@ public class UserList {
     public void setCount(int count) {
         this.count = count;
     }
+
+    public String toString(){
+        String result = "";
+
+        for (User user: users) {
+            result = result.concat(user.getUsername() + " -> " + user.getEmail() + "\n");
+        }
+
+        return result;
+    }
+
 }

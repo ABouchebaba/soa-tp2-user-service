@@ -31,7 +31,8 @@ public class UserResource {
     @Autowired
     UserRepository userRepository;
 
-    RestTemplate restTemplate = new RestTemplate();
+    @Autowired
+    RestTemplate restTemplate ;
 
     @GetMapping(produces = "application/json")
     public ResponseEntity<UserList> getAll(){
@@ -68,7 +69,7 @@ public class UserResource {
         try{
             responseEntity = restTemplate.getForEntity(uri, MessageList.class);
         }
-        catch(HttpServerErrorException se){
+        catch (RestClientException ce){
             throw new RemoteException("Message service not responding!");
         }
 

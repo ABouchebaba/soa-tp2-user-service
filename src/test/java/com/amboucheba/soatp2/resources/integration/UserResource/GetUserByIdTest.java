@@ -6,18 +6,20 @@ import com.amboucheba.soatp2.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
+import org.springframework.web.client.RestTemplate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(classes = SoaTp2Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @SqlGroup({
-        @Sql(scripts = { "classpath:schema.sql" }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
+        @Sql(scripts = { "classpath:schema.sql", "classpath:data.sql" }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
         @Sql(scripts = { "classpath:reset.sql" }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 })
 class GetUserByIdTest {
@@ -31,7 +33,7 @@ class GetUserByIdTest {
     @Autowired
     private UserRepository userRepository;
 
-    @Sql({ "classpath:schema.sql", "classpath:data.sql" })
+
     @Test
     void getExistingUserById() throws Exception {
         String username = "New User";
@@ -51,7 +53,6 @@ class GetUserByIdTest {
         assertEquals(email, fetchedUser.getEmail());
     }
 
-    @Sql({ "classpath:schema.sql", "classpath:data.sql" })
     @Test
     void userDoesNotExist() throws Exception {
         // Create a user and save it
