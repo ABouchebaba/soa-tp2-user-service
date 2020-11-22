@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
@@ -19,8 +20,8 @@ public class SoaTp2Application {
 	}
 
 	@GetMapping(produces = "text/html")
-	public String home(){
-		return "<html><body><p> User service: Home page </p></body></html>";
+	public String home(@RequestParam(value = "user", required = false, defaultValue = "") String user){
+		return "<html><body><h1>Welcome " + user + "</h1><p> User service: Home page </p></body></html>";
 	}
 
 
