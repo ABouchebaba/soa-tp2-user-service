@@ -1,12 +1,15 @@
 package com.amboucheba.soatp2.resources;
 
 
+import com.amboucheba.soatp2.exceptions.ApiException;
 import com.amboucheba.soatp2.exceptions.NotFoundException;
 import com.amboucheba.soatp2.exceptions.RemoteException;
 import com.amboucheba.soatp2.models.MessageList;
 import com.amboucheba.soatp2.models.User;
 import com.amboucheba.soatp2.models.UserList;
 import com.amboucheba.soatp2.repositories.UserRepository;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,6 +47,10 @@ public class UserResource {
     }
 
     @GetMapping(value = "/{userId}", produces = "application/json")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "User returned in response body"),
+            @ApiResponse(code = 404, message = "User not found")
+    })
     public ResponseEntity<User> getUserById(@PathVariable("userId") long userId){
 
         Optional<User> user = userRepository.findById(userId);
@@ -54,6 +61,11 @@ public class UserResource {
     }
 
     @GetMapping(value = "/{userId}/messages", produces = "application/json")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "User messages returned in response body"),
+            @ApiResponse(code = 404, message = "User not found"),
+            @ApiResponse(code = 503, message = "Message service did not respond")
+    })
     public ResponseEntity<MessageList> getUserMessagesById(@PathVariable("userId") long userId)  {
 
         Optional<User> user = userRepository.findById(userId);
@@ -79,7 +91,12 @@ public class UserResource {
     }
 
     @PostMapping(consumes = "application/json" )
-    public ResponseEntity<Object> addUser(@Valid @RequestBody User newUser){
+    @ResponseStatus(HttpStatus.CREATED)
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "User created, check location header for uri"),
+            @ApiResponse(code = 400, message = "Provided User info not valid, check response body for more details on error")
+    })
+    public ResponseEntity<Void> addUser(@Valid @RequestBody User newUser){
         // NOT ENOUGH SPACE EXCEPTION
         /// ...
         User savedUser = userRepository.save(newUser);
@@ -92,8 +109,13 @@ public class UserResource {
         return ResponseEntity.created(location).build();
     }
 
-    @PutMapping(value = "/{userId}", consumes = "application/json")
-    public ResponseEntity<Object> updateUser(@PathVariable("userId") long userId, @Valid @RequestBody User newUser){
+    @PutMapping(value = "/{userId}", consumes = "application/json", produces = "application/json")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "User updated and returned in response body"),
+            @ApiResponse(code = 201, message = "User created,  check location header for uri"),
+            @ApiResponse(code = 400, message = "Provided User info not valid, check response body for more details on error")
+    })
+    public ResponseEntity<User> updateUser(@PathVariable("userId") long userId, @Valid @RequestBody User newUser){
         // NOT ENOUGH SPACE EXCEPTION
         /// ...
 
