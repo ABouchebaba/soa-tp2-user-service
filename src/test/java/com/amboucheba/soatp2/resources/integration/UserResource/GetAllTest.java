@@ -40,7 +40,6 @@ class GetAllTest {
     void getAll() throws Exception {
        String uri = "http://localhost:" + port + "/users";
        ResponseEntity<UserList> responseEntity = testRestTemplate.getForEntity(uri, UserList.class);
-//       UserList messageList = responseEntity.getBody();
 
        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 
